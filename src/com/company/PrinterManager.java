@@ -19,6 +19,7 @@ final class PrinterManager {
 
 	public void start() {
 		exec_service.submit(new PrintQueue());
+		exec_service.shutdown();
 	}
 
 	public boolean print(final Request r) {
@@ -67,7 +68,6 @@ final class PrinterManager {
 
 	public List<Request> stop() {
 		running = false;
-		exec_service.shutdown();
 		System.out.println("Manager stopping");
 		return new ArrayList<>(requests);
 	}
@@ -80,9 +80,7 @@ final class PrinterManager {
 			currentThread.setName("Print-Thread");
 			try {
 				while (running) {
-					if (!requests.isEmpty()) {
-						printOne();
-					}
+					printOne();
 				}
 			} finally {
 				currentThread.setName(oldName);
@@ -91,12 +89,15 @@ final class PrinterManager {
 		}
 
 		private void printOne() {
-			final Request r = requests.poll();
-			final String msg = String.format("message #%d", r.getId());
-			printed.add(r);
+			final Request request = requests.poll();
+			if (request == null) {
+				return;
+			}
+			final String msg = String.format("message #%d", request.getId());
+			printed.add(request);
 			System.out.println("Start. " + msg);
 			try {
-				TimeUnit.SECONDS.sleep(r.getPrintTime());
+				TimeUnit.SECONDS.sleep(request.getPrintTime());
 			} catch (InterruptedException e1) {
 				System.out.println("Interrupted");
 			}
