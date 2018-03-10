@@ -1,7 +1,7 @@
 package com.company;
 
 public class Main {
-	static final PrinterManager printerManager = new PrinterManager();
+	static final PrinterManager printerManager = new PrinterManager(new Printer());
 	private static final PrintPooler printPooler = new PrintPooler(printerManager);
 	private static final Stopper stopper = new Stopper(printerManager);
 

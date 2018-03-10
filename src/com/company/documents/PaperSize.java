@@ -1,4 +1,4 @@
-package com.company;
+package com.company.documents;
 
 import java.util.Objects;
 
@@ -7,7 +7,7 @@ public class PaperSize implements Comparable<PaperSize> {
 	private final Integer height;
 	private final Integer perimeter;
 
-	PaperSize(int width, int height) {
+	public PaperSize(int width, int height) {
 		this.width = width;
 		this.height = height;
 		this.perimeter = width * height;
