@@ -36,4 +36,12 @@ public class PaperSize implements Comparable<PaperSize> {
 
 		return Objects.hash(width, height);
 	}
+
+	@Override
+	public String toString() {
+		return "PaperSize{" +
+				"width=" + width +
+				", height=" + height +
+				'}';
+	}
 }

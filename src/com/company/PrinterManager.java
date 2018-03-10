@@ -37,19 +37,19 @@ final class PrinterManager {
 		return serviceRunning && documentsPool.remove(r);
 	}
 
-	public List<Document> getResponsesSortedByPrintOrder() {
+	public List<Document> getDocumentsSortedByPrintOrder() {
 		return printedDocsList;
 	}
 
-	public List<Document> getResponsesSortedByType() {
+	public List<Document> getDocumentsSortedByType() {
 		return getSortedListOfPrintedDocs(typeComparator);
 	}
 
-	public List<Document> getResponsesSortedByPrintTime() {
+	public List<Document> getDocumentsSortedByPrintTime() {
 		return getSortedListOfPrintedDocs(printTimeComparator);
 	}
 
-	public List<Document> getResponsesSortedByPaperSize() {
+	public List<Document> getDocumentsSortedByPaperSize() {
 		return getSortedListOfPrintedDocs(paperSizeComparator);
 	}
 

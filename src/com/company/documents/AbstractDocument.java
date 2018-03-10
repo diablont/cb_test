@@ -43,4 +43,14 @@ public abstract class AbstractDocument implements Document {
 	public int hashCode() {
 		return Objects.hash(id);
 	}
+
+	@Override
+	public String toString() {
+		return "AbstractDocument{" +
+				"id=" + id +
+				", printTime=" + printTime +
+				", type=" + type +
+				", paperSize=" + paperSize +
+				'}';
+	}
 }
