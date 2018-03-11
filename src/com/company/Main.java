@@ -7,7 +7,6 @@ public class Main {
 
 	public static void main(String[] args) {
 		Runtime.getRuntime().addShutdownHook(new Hook());
-		printerManager.start();
 		new Thread(printPooler, "Thread #" + 1).start();
 		new Thread(stopper, "Thread #" + 1).start();
 		while (true) {

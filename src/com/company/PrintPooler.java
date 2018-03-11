@@ -27,9 +27,9 @@ public class PrintPooler implements Runnable {
 			while (running) {
 				TimeUnit.SECONDS.sleep(1);
 				Document request = documentFactory.createRandomDocument(id.getAndIncrement());
-				boolean print = manager.print(request);
+				boolean print = manager.addTask(request);
 				if (!print) {
-					System.out.println("Can't send to print. Service offline.");
+					System.out.println("Can't send to addTask. Service offline.");
 				} else {
 					System.out.println(String.format("Success pool task #%d.", request.getId()));
 				}

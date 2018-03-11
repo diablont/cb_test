@@ -1,40 +1,55 @@
 package com.company;
 
-import com.company.documents.*;
+import com.company.documents.Document;
+import com.company.documents.DocumentPaperSizeComparator;
+import com.company.documents.DocumentPrintTimeComparator;
+import com.company.documents.DocumentTypeComparator;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 final class PrinterManager {
 	private final Printer printer;
-	private final Queue<Document> documentsPool;
-	private final List<Document> printedDocsList;
-	private final RequestTypeComparator typeComparator = new RequestTypeComparator();
-	private final RequestPrintTimeComparator printTimeComparator = new RequestPrintTimeComparator();
-	private final RequestPaperSizeComparator paperSizeComparator = new RequestPaperSizeComparator();
+	private final Queue<Document> documentsPool = new ConcurrentLinkedQueue<>();
+	private final List<Document> printedDocsList = new CopyOnWriteArrayList<>();
+	private final DocumentTypeComparator typeComparator = new DocumentTypeComparator();
+	private final DocumentPrintTimeComparator printTimeComparator = new DocumentPrintTimeComparator();
+	private final DocumentPaperSizeComparator paperSizeComparator = new DocumentPaperSizeComparator();
 	private volatile boolean serviceRunning = true;
+	private volatile boolean printing = false;
 
-	PrinterManager(Printer printer) {
+	public PrinterManager(Printer printer) {
 		this.printer = printer;
-		this.documentsPool = new ConcurrentLinkedQueue<>();
-		this.printedDocsList = new CopyOnWriteArrayList<>();
-	}
-
-	public void start() {
 		ExecutorService exec_service = Executors.newSingleThreadExecutor();
 		exec_service.submit(new PrintQueue());
 		exec_service.shutdown();
 	}
 
-	public boolean print(final Document r) {
-		return serviceRunning && documentsPool.offer(r);
+	public List<Document> stop() {
+		serviceRunning = false;
+		System.out.println("Manager stopping");
+		while (printing) {
+			waitPrintingEnd();
+		}
+		ArrayList<Document> documents = new ArrayList<>(documentsPool);
+		documentsPool.clear();
+		return documents;
 	}
 
-	public boolean cancelTask(final Document r) {
-		return serviceRunning && documentsPool.remove(r);
+	private void waitPrintingEnd() {
+		try {
+			TimeUnit.SECONDS.sleep(1);
+		} catch (InterruptedException e) {
+			System.out.println("Interrupt!");
+		}
+	}
+
+	public boolean addTask(final Document document) {
+		return serviceRunning && documentsPool.offer(document);
+	}
+
+	public boolean cancelTask(final Document document) {
+		return serviceRunning && documentsPool.remove(document);
 	}
 
 	public List<Document> getDocumentsSortedByPrintOrder() {
@@ -72,28 +87,28 @@ final class PrinterManager {
 		return sortedList;
 	}
 
-	public List<Document> stop() {
-		serviceRunning = false;
-		System.out.println("Manager stopping");
-		return new ArrayList<>(documentsPool);
-	}
-
 	private class PrintQueue implements Runnable {
 		@Override
 		public void run() {
-			while (serviceRunning) {
-				printOne();
+			try {
+				while (serviceRunning) {
+					printOne();
+				}
+			} finally {
+				printing = false;
 			}
 			System.out.println("Manager stopped");
 		}
 
 		private void printOne() {
+			printing = true;
 			final Document documentToPrint = documentsPool.poll();
 			if (documentToPrint == null) {
 				return;
 			}
-			printedDocsList.add(documentToPrint);
 			printer.print(documentToPrint);
+			printedDocsList.add(documentToPrint);
+			printing = false;
 		}
 	}
 }

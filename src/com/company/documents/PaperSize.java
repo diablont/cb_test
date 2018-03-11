@@ -2,7 +2,7 @@ package com.company.documents;
 
 import java.util.Objects;
 
-public class PaperSize implements Comparable<PaperSize> {
+public class PaperSize {
 	private final Integer width;
 	private final Integer height;
 	private final Integer perimeter;
@@ -13,13 +13,16 @@ public class PaperSize implements Comparable<PaperSize> {
 		this.perimeter = width * height;
 	}
 
-	private Integer getPerimeter() {
+	public Integer getPerimeter() {
 		return perimeter;
 	}
 
-	@Override
-	public int compareTo(PaperSize o) {
-		return perimeter.compareTo(o.getPerimeter());
+	public Integer getHeight() {
+		return height;
+	}
+
+	public Integer getWidth() {
+		return width;
 	}
 
 	@Override
@@ -33,7 +36,6 @@ public class PaperSize implements Comparable<PaperSize> {
 
 	@Override
 	public int hashCode() {
-
 		return Objects.hash(width, height);
 	}
 
