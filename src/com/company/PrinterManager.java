@@ -11,7 +11,7 @@ import java.util.concurrent.*;
 final class PrinterManager {
 	private final Printer printer;
 	private final Queue<Document> documentsPool = new ConcurrentLinkedQueue<>();
-	private final List<Document> printedDocsList = new CopyOnWriteArrayList<>();
+	private final List<Document> printedDocsList = new ArrayList<>();
 	private final DocumentTypeComparator typeComparator = new DocumentTypeComparator();
 	private final DocumentPrintTimeComparator printTimeComparator = new DocumentPrintTimeComparator();
 	private final DocumentPaperSizeComparator paperSizeComparator = new DocumentPaperSizeComparator();
